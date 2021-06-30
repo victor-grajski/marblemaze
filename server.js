@@ -27,12 +27,6 @@ io.on("connection", (socket) => {
     socket.emit("joined", users);
   });
 
-  socket.on("rollDice", (data) => {
-    users[data.id].pos = data.pos;
-    const turn = data.num != 6 ? (data.id + 1) % users.length : data.id;
-    io.sockets.emit("rollDice", data, turn);
-  });
-
   socket.on("restart", () => {
     users = [];
     io.sockets.emit("restart");

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marble Maze</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto"
+      rel="stylesheet"
+    />
+    <!-- <link rel="stylesheet" href="css/styles.css" /> -->
+  </head>
+  <body>
+    <div class="info-box">
+      <div class="form-group">
+        <button class="btn draw-border" id="start-btn">Join</button>
+      </div>
+    </div>
+    <div id="players-box">
+      <h3>Players currently online:</h3>
+      <br>
+      <table id="players-table"></table>
+    </div>
+    <button class="btn draw-border" id="restart-btn" hidden>Restart</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
