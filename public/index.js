@@ -1,5 +1,5 @@
 // Making Connection
-const socket = io.connect("http://172.20.10.6:3000");
+const socket = io();
 socket.emit("joined");
 
 let players = []; // All players in the game
@@ -17,10 +17,27 @@ document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("start-btn").hidden = true;
     currentPlayer = new Player(players.length, 0, 0);
     socket.emit("join", currentPlayer);
-  });
 
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(permissionState => {
+                if (permissionState === 'granted') {
+                    window.addEventListener("devicemotion", event => {
+                        console.log(event.acceleration.x);
+                        document.getElementById("x").innerHTML = `X: ${event.acceleration.x} m/s^2`;
+                        document.getElementById("y").innerHTML = `Y: ${event.acceleration.y} m/s^2`;
+                        document.getElementById("z").innerHTML = `Z: ${event.acceleration.z} m/s^2`;
 
-// Listen for events
+                    });
+                }
+            })
+            .catch(console.error);
+    } else {
+
+    }
+});
+
+// socket events
 socket.on("join", (data) => {
     players.push(new Player(players.length, data.x, data.y));
 
