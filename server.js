@@ -6,6 +6,14 @@ const app = express();
 const PORT = 3000 || process.env.PORT;
 const server = http.createServer(app);
 
+var EventEmitter = require("events").EventEmitter;
+var ee = new EventEmitter();
+
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
 // Set static folder
 app.use(express.static("public"));
 
@@ -20,6 +28,19 @@ io.on("connection", (socket) => {
 
   socket.on("join", (data) => {
     users.push(data);
+
+    if (users.length === 2) {
+      readline.question(`Are all players present? (y/n)`, response => {
+        if (response === 'y') {
+          ee.emit("ready");
+        } else {
+          ee.emit("notready");
+        }
+  
+        readline.close()
+      })
+    }
+
     io.sockets.emit("join", data);
   });
 
@@ -27,10 +48,18 @@ io.on("connection", (socket) => {
     socket.emit("joined", users);
   });
 
+  socket.on("phonemove", data => {
+    // console.log(data);
+  });
+
   socket.on("restart", () => {
     users = [];
     io.sockets.emit("restart");
   });
+});
+
+ee.on("ready", () => {
+  console.log("ready!");
 });
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
