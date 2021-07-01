@@ -23,11 +23,17 @@ document.getElementById("start-btn").addEventListener("click", () => {
             .then(permissionState => {
                 if (permissionState === 'granted') {
                     window.addEventListener("devicemotion", event => {
-                        console.log(event.acceleration.x);
-                        document.getElementById("x").innerHTML = `X: ${event.acceleration.x} m/s^2`;
-                        document.getElementById("y").innerHTML = `Y: ${event.acceleration.y} m/s^2`;
-                        document.getElementById("z").innerHTML = `Z: ${event.acceleration.z} m/s^2`;
+                        players[currentPlayer.id].x = Math.round(event.accelerationIncludingGravity.x * (10 ^ 2)) / (10 ^ 2);
+                        players[currentPlayer.id].y = Math.round(event.accelerationIncludingGravity.y * (10 ^ 2)) / (10 ^ 2);
 
+                        currentPlayer.x = Math.round(event.accelerationIncludingGravity.x * (10 ^ 2)) / (10 ^ 2);
+                        currentPlayer.y = Math.round(event.accelerationIncludingGravity.y * (10 ^ 2)) / (10 ^ 2);
+
+                        socket.emit("phonemove", currentPlayer);
+
+                        
+                        document.getElementById("current-player-x").innerHTML = `X: ${players[currentPlayer.id].x}`;
+                        document.getElementById("current-player-y").innerHTML = `Y: ${players[currentPlayer.id].y}`;
                     });
                 }
             })
@@ -39,7 +45,7 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 // socket events
 socket.on("join", (data) => {
-    players.push(new Player(players.length, data.x, data.y));
+    players.push(new Player(data.id, data.x, data.y));
 
     playersHTML = "";
     players.forEach((player) => {
@@ -53,11 +59,9 @@ socket.on("joined", (data) => {
     playersHTML = "";
     data.forEach((player, index) => {
       players.push(new Player(index, player.x, player.y));
-      console.log("meep");
       playersHTML += `<tr><td>${player.id}</td>`;
     });
     document.getElementById("players-table").innerHTML = playersHTML;
-
   });
 
 // Logic to restart the game
