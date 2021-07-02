@@ -22,16 +22,16 @@ app.use(express.static("public"));
 
 // check to make sure that the user calls the serial port for the arduino when
 // running the server
-if(!process.argv[2]) {
-  console.error('Usage: node ' + process.argv[1] + ' SERIAL_PORT');
-  process.exit(1);
-}
+// if(!process.argv[2]) {
+//   console.error('Usage: node ' + process.argv[1] + ' SERIAL_PORT');
+//   process.exit(1);
+// }
 
 // start the serial port connection and read on newlines
-const port = new SerialPort(process.argv[2]);
-const parser = port.pipe(new ParserReadline({
-  delimiter: '\r\n'
-}));
+// const port = new SerialPort(process.argv[2]);
+// const parser = port.pipe(new ParserReadline({
+//   delimiter: '\r\n'
+// }));
 
 // Socket setup
 const io = socket(server);
@@ -39,7 +39,12 @@ const io = socket(server);
 // Players array
 let users = [];
 
-const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+let ready = false;
+
+let x;
+let y;
+
+const map = (value, x1, x2, y1, y2) => (value - x1) * (y2 - y1) / (x2 - x1) + y1;
 
 io.on("connection", (socket) => {
   console.log("Made socket connection", socket.id);
@@ -67,7 +72,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("phonemove", data => {
-    // console.log(data);
+    if (ready) {
+      users[data.id] = data;
+
+      x = (users[0].x + users[1].x) / 2;
+      x = map(x, -10, 10, 0, 180);
+
+      y = (users[0].y + users[1].y) / 2;
+      y = map(y, -10, 10, 0, 180);
+      console.log(`${x}, ${y}`);
+    }
   });
 
   socket.on("restart", () => {
@@ -78,15 +92,8 @@ io.on("connection", (socket) => {
 
 // servo controller
 ee.on("ready", () => {
+  ready = true;
   console.log("ready!");
-
-  x = (users[0].x + users[1].x) / 2;
-  x = map(x, -10, 0, 10, 180);
-  console.log(x);
-
-  y = (users[0].y + users[1].y) / 2;
-  y = map(y, -10, 0, 10, 180);
-  console.log(y);
 
   // port.write(x);
   // port.write(y);
