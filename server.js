@@ -27,7 +27,7 @@ if(!process.argv[2]) {
 }
 
 // start the serial port connection and read on newlines
-const port = new SerialPort(process.argv[2]);
+const port = new SerialPort(process.argv[2], { baudRate: 115200 });
 const parser = port.pipe(new ParserReadline({
   delimiter: '\r\n'
 }));

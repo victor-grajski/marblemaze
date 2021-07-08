@@ -51,7 +51,7 @@ boolean newData = false;
 uint8_t servonum = 0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pwm.begin();
   /*
@@ -83,45 +83,15 @@ void loop() {
             // this temporary copy is necessary to protect the original data
             //   because strtok() used in parseData() replaces the commas with \0
         parseData();
-        showParsedData();
+        // showParsedData();
         newData = false;
         
         x_pulselength = map(x, 0, 180, SERVOMIN, SERVOMAX);
         y_pulselength = map(y, 0, 180, SERVOMIN, SERVOMAX);
         
         pwm.setPWM(0, 0, x_pulselength);
-        // pwm.setPWM(1, 0, y_pulselength);
+        pwm.setPWM(1, 0, y_pulselength);
     }
-  
-  
-  
-//  uint16_t pulselength = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
-  
-  // Drive each servo one at a time using setPWM()
-//  Serial.println(servonum);
-//  for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-//    pwm.setPWM(servonum, 0, pulselen);
-//  }
-//
-//  delay(3000);
-//  for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-//    pwm.setPWM(servonum, 0, pulselen);
-//  }
-//
-//  delay(2000);
-
-  // Drive each servo one at a time using writeMicroseconds(), it's not precise due to calculation rounding!
-  // The writeMicroseconds() function is used to mimic the Arduino Servo library writeMicroseconds() behavior. 
-//  for (uint16_t microsec = USMIN; microsec < USMAX; microsec++) {
-//    pwm.writeMicroseconds(servonum, microsec);
-//  }
-//
-//  delay(500);
-//  for (uint16_t microsec = USMAX; microsec > USMIN; microsec--) {
-//    pwm.writeMicroseconds(servonum, microsec);
-//  }
-//
-//  delay(500);
 }
 
 //============
