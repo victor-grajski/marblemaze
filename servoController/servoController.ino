@@ -33,16 +33,25 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // have!
 #define SERVOMIN  110 // This is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX  475 // This is the 'maximum' pulse length count (out of 4096)
-#define USMIN  600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
-#define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
+
+const byte numChars = 32;
+char receivedChars[numChars];
+char tempChars[numChars];        // temporary array for use when parsing
+
+// variables to hold the parsed data
+int x = 0;
+int y = 0;
+int x_pulselength;
+int y_pulselength;
+
+boolean newData = false;
 
 // our servo # counter
 uint8_t servonum = 0;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("8 channel Servo test!");
 
   pwm.begin();
   /*
@@ -68,13 +77,25 @@ void setup() {
 }
 
 void loop() {
-  // read the character we recieve on the serial port from the RPi
-  if(Serial.available()) {
-    inChar = Serial.read();
-    Serial.println(inChar);
-  }
+  recvWithStartEndMarkers();
+    if (newData == true) {
+        strcpy(tempChars, receivedChars);
+            // this temporary copy is necessary to protect the original data
+            //   because strtok() used in parseData() replaces the commas with \0
+        parseData();
+        showParsedData();
+        newData = false;
+        
+        x_pulselength = map(x, 0, 180, SERVOMIN, SERVOMAX);
+        y_pulselength = map(y, 0, 180, SERVOMIN, SERVOMAX);
+        
+        pwm.setPWM(0, 0, x_pulselength);
+        // pwm.setPWM(1, 0, y_pulselength);
+    }
   
-  uint16_t pulselength = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
+  
+  
+//  uint16_t pulselength = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
   
   // Drive each servo one at a time using setPWM()
 //  Serial.println(servonum);
@@ -101,7 +122,61 @@ void loop() {
 //  }
 //
 //  delay(500);
+}
 
-  servonum++;
-  if (servonum > 2) servonum = 0; // Testing the first 8 servo channels
+//============
+
+void recvWithStartEndMarkers() {
+    static boolean recvInProgress = false;
+    static byte ndx = 0;
+    char startMarker = '<';
+    char endMarker = '>';
+    char rc;
+
+    while (Serial.available() > 0 && newData == false) {
+        rc = Serial.read();
+
+        if (recvInProgress == true) {
+            if (rc != endMarker) {
+                receivedChars[ndx] = rc;
+                ndx++;
+                if (ndx >= numChars) {
+                    ndx = numChars - 1;
+                }
+            }
+            else {
+                receivedChars[ndx] = '\0'; // terminate the string
+                recvInProgress = false;
+                ndx = 0;
+                newData = true;
+            }
+        }
+
+        else if (rc == startMarker) {
+            recvInProgress = true;
+        }
+    }
+}
+
+//============
+
+void parseData() {      // split the data into its parts
+
+    char * strtokIndx; // this is used by strtok() as an index
+
+    strtokIndx = strtok(tempChars,",");      // get the first part - the string
+    x = atoi(strtokIndx);     // convert this part to an integer
+ 
+    strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
+    y = atoi(strtokIndx);     // convert this part to an integer
+
+}
+
+//============
+
+void showParsedData() {
+    Serial.print("x: ");
+    Serial.print(x_pulselength);
+    Serial.print(", y: ");
+    Serial.println(y_pulselength);
 }

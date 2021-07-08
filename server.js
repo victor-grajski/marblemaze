@@ -20,18 +20,17 @@ const readline = require('readline').createInterface({
 // Set static folder
 app.use(express.static("public"));
 
-// check to make sure that the user calls the serial port for the arduino when
-// running the server
-// if(!process.argv[2]) {
-//   console.error('Usage: node ' + process.argv[1] + ' SERIAL_PORT');
-//   process.exit(1);
-// }
+// check to make sure that the user calls the serial port for the arduino when running the server
+if(!process.argv[2]) {
+  console.error('Usage: node ' + process.argv[1] + ' SERIAL_PORT');
+  process.exit(1);
+}
 
 // start the serial port connection and read on newlines
-// const port = new SerialPort(process.argv[2]);
-// const parser = port.pipe(new ParserReadline({
-//   delimiter: '\r\n'
-// }));
+const port = new SerialPort(process.argv[2]);
+const parser = port.pipe(new ParserReadline({
+  delimiter: '\r\n'
+}));
 
 // Socket setup
 const io = socket(server);
@@ -80,7 +79,8 @@ io.on("connection", (socket) => {
 
       y = (users[0].y + users[1].y) / 2;
       y = map(y, -10, 10, 0, 180);
-      console.log(`${x}, ${y}`);
+      // console.log(`${x}, ${y}`);
+      port.write(`<${x}, ${y}>`);
     }
   });
 
@@ -102,9 +102,9 @@ ee.on("ready", () => {
 // this is the serial port event handler.
 // read the serial data coming from arduino - you must use 'data' as the first argument
 // and send it off to the client using a socket message
-// parser.on('data', function(data) {
-//   console.log('data:', data);
-//   io.emit('server-msg', data);
-// });
+parser.on('data', function(data) {
+  console.log('data:', data);
+  io.emit('server-msg', data);
+});
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
