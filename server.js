@@ -75,10 +75,10 @@ io.on("connection", (socket) => {
       users[data.id] = data;
 
       x = (users[0].x + users[1].x) / 2;
-      x = map(x, -10, 10, 0, 180);
+      x = map(x, -0.5, 0.5, 80, 110);
 
       y = (users[0].y + users[1].y) / 2;
-      y = map(y, -10, 10, 0, 180);
+      y = map(y, -3.5, -2.5, 75, 110);
       // console.log(`${x}, ${y}`);
       port.write(`<${x}, ${y}>`);
     }
