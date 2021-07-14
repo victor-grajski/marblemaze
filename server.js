@@ -43,15 +43,15 @@ let ready = false;
 let x;
 let y;
 
-const BOOSTER_X_LOW = -0.5;
-const BOOSTER_X_HIGH = 0.5;
-const BOOSTER_Y_LOW = -2.5;
-const BOOSTER_Y_HIGH = -2;
+const BOOSTER_X_SET_POINT = 0.0;
+const BOOSTER_X_RANGE = 1.0;
+const BOOSTER_Y_SET_POINT = -2.0;
+const BOOSTER_Y_RANGE = 1.0;
 
-const FOAM_X_LOW = -0.5;
-const FOAM_X_HIGH = 0.5;
-const FOAM_Y_LOW = -2.5;
-const FOAM_Y_HIGH = -2;
+const FOAM_X_SET_POINT = 0.0;
+const FOAM_X_RANGE = 1.0;
+const FOAM_Y_SET_POINT = -2.0;
+const FOAM_Y_RANGE = 1.0;
 
 const map = (value, x1, x2, y1, y2) => (value - x1) * (y2 - y1) / (x2 - x1) + y1;
 
@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
     // booster seat vs no booster seat
     users.push(data);
 
-    if (users.length === process.argv[3]) {
+    if (users.length === parseInt(process.argv[3])) {
       readline.question(`Ready to start? (y/n)`, response => {
         if (response === 'y') {
           ee.emit("ready");
@@ -84,6 +84,16 @@ io.on("connection", (socket) => {
 
   socket.on("phonemove", data => {
     if (ready) {
+      const BOOSTER_X_LOW = BOOSTER_X_SET_POINT - (BOOSTER_X_RANGE / 2);
+      const BOOSTER_X_HIGH = BOOSTER_X_SET_POINT + (BOOSTER_X_RANGE / 2);
+      const BOOSTER_Y_LOW = BOOSTER_Y_SET_POINT - (BOOSTER_Y_RANGE / 2);
+      const BOOSTER_Y_HIGH = BOOSTER_Y_SET_POINT + (BOOSTER_Y_RANGE / 2);
+
+      const FOAM_X_LOW = FOAM_X_SET_POINT - (FOAM_X_RANGE / 2);
+      const FOAM_X_HIGH = FOAM_X_SET_POINT + (FOAM_X_RANGE / 2);
+      const FOAM_Y_LOW = FOAM_Y_SET_POINT - (FOAM_Y_RANGE / 2);
+      const FOAM_Y_HIGH = FOAM_Y_SET_POINT + (FOAM_Y_RANGE / 2);
+
       users[data.id] = data;
       playerOne = process.argv[4];
       playerTwo = process.argv[5];
@@ -100,7 +110,7 @@ io.on("connection", (socket) => {
           y = map(y, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
         }
       }
-      if (users.length === 2) {
+      if (users.length > 1) {
         x1 = users[0].x;
         y1 = users[0].y;
 
@@ -119,13 +129,13 @@ io.on("connection", (socket) => {
           x2 = map(x2, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
           y2 = map(y2, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
         } else {
-          x1 = map(x1, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
-          y1 = map(y1, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+          x2 = map(x2, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
+          y2 = map(y2, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
         }
-      }
 
-      x = (x1 + x2) / 2;
-      y = (y1 + y2) / 2;
+        x = (x1 + x2) / 2;
+        y = (y1 + y2) / 2;
+      }
 
       // console.log(`${x}, ${y}`);
       port.write(`<${x}, ${y}>`);
