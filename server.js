@@ -21,8 +21,8 @@ const readline = require('readline').createInterface({
 app.use(express.static("public"));
 
 // check to make sure that the user calls the serial port for the arduino when running the server
-if(!process.argv[2]) {
-  console.error('Usage: node ' + process.argv[1] + ' SERIAL_PORT');
+if (!process.argv[2] || !process.argv[3] || !process.argv[4] || !process.argv[5]) {
+  console.error(`Usage: node ${process.argv[1]} SERIAL_PORT NUM_PLAYERS PLAYER_ONE PLAYER_TWO`);
   process.exit(1);
 }
 
@@ -43,15 +43,27 @@ let ready = false;
 let x;
 let y;
 
+const BOOSTER_X_LOW = -0.5;
+const BOOSTER_X_HIGH = 0.5;
+const BOOSTER_Y_LOW = -3;
+const BOOSTER_Y_HIGH = -2;
+
+const FOAM_X_LOW = -0.5;
+const FOAM_X_HIGH = 0.5;
+const FOAM_Y_LOW = -3;
+const FOAM_Y_HIGH = -2;
+
 const map = (value, x1, x2, y1, y2) => (value - x1) * (y2 - y1) / (x2 - x1) + y1;
 
 io.on("connection", (socket) => {
   console.log("Made socket connection", socket.id);
 
   socket.on("join", (data) => {
+    // num players
+    // booster seat vs no booster seat
     users.push(data);
 
-    if (users.length === 2) {
+    if (users.length === process.argv[3]) {
       readline.question(`Ready to start? (y/n)`, response => {
         if (response === 'y') {
           ee.emit("ready");
@@ -73,12 +85,48 @@ io.on("connection", (socket) => {
   socket.on("phonemove", data => {
     if (ready) {
       users[data.id] = data;
+      playerOne = process.argv[4];
+      playerTwo = process.argv[5];
 
-      x = (users[0].x + users[1].x) / 2;
-      x = map(x, -0.5, 0.5, 80, 110);
+      if (users.length === 1) {
+        x = users[0].x;
+        y = users[0].y;
 
-      y = (users[0].y + users[1].y) / 2;
-      y = map(y, -3.5, -2.5, 75, 110);
+        if (playerOne === "booster") {
+          x = map(x, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
+          y = map(y, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
+        } else {
+          x = map(x, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
+          y = map(y, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+        }
+      }
+      if (users.length === 2) {
+        x1 = users[0].x;
+        y1 = users[0].y;
+
+        x2 = users[1].x;
+        y2 = users[1].y;
+
+        if (playerOne === "booster") {
+          x1 = map(x1, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
+          y1 = map(y1, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
+        } else {
+          x1 = map(x1, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
+          y1 = map(y1, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+        }
+
+        if (playerTwo === "booster") {
+          x2 = map(x2, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
+          y2 = map(y2, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
+        } else {
+          x1 = map(x1, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
+          y1 = map(y1, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+        }
+      }
+
+      x = (x1 + x2) / 2;
+      y = (y1 + y2) / 2;
+
       // console.log(`${x}, ${y}`);
       port.write(`<${x}, ${y}>`);
     }
@@ -94,9 +142,6 @@ io.on("connection", (socket) => {
 ee.on("ready", () => {
   ready = true;
   console.log("ready!");
-
-  // port.write(x);
-  // port.write(y);
 });
 
 // this is the serial port event handler.
