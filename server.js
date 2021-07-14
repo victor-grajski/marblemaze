@@ -45,12 +45,12 @@ let y;
 
 const BOOSTER_X_LOW = -0.5;
 const BOOSTER_X_HIGH = 0.5;
-const BOOSTER_Y_LOW = -3;
+const BOOSTER_Y_LOW = -2.5;
 const BOOSTER_Y_HIGH = -2;
 
 const FOAM_X_LOW = -0.5;
 const FOAM_X_HIGH = 0.5;
-const FOAM_Y_LOW = -3;
+const FOAM_Y_LOW = -2.5;
 const FOAM_Y_HIGH = -2;
 
 const map = (value, x1, x2, y1, y2) => (value - x1) * (y2 - y1) / (x2 - x1) + y1;
