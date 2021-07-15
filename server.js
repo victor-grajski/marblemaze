@@ -84,15 +84,15 @@ io.on("connection", (socket) => {
 
   socket.on("phonemove", data => {
     if (ready) {
-      const BOOSTER_X_LOW = BOOSTER_X_SET_POINT - (BOOSTER_X_RANGE / 2);
-      const BOOSTER_X_HIGH = BOOSTER_X_SET_POINT + (BOOSTER_X_RANGE / 2);
-      const BOOSTER_Y_LOW = BOOSTER_Y_SET_POINT - (BOOSTER_Y_RANGE / 2);
-      const BOOSTER_Y_HIGH = BOOSTER_Y_SET_POINT + (BOOSTER_Y_RANGE / 2);
+      let BOOSTER_X_LOW = BOOSTER_X_SET_POINT - (BOOSTER_X_RANGE / 2);
+      let BOOSTER_X_HIGH = BOOSTER_X_SET_POINT + (BOOSTER_X_RANGE / 2);
+      let BOOSTER_Y_LOW = BOOSTER_Y_SET_POINT - (BOOSTER_Y_RANGE / 2);
+      let BOOSTER_Y_HIGH = BOOSTER_Y_SET_POINT + (BOOSTER_Y_RANGE / 2);
 
-      const FOAM_X_LOW = FOAM_X_SET_POINT - (FOAM_X_RANGE / 2);
-      const FOAM_X_HIGH = FOAM_X_SET_POINT + (FOAM_X_RANGE / 2);
-      const FOAM_Y_LOW = FOAM_Y_SET_POINT - (FOAM_Y_RANGE / 2);
-      const FOAM_Y_HIGH = FOAM_Y_SET_POINT + (FOAM_Y_RANGE / 2);
+      let FOAM_X_LOW = FOAM_X_SET_POINT - (FOAM_X_RANGE / 2);
+      let FOAM_X_HIGH = FOAM_X_SET_POINT + (FOAM_X_RANGE / 2);
+      let FOAM_Y_LOW = FOAM_Y_SET_POINT - (FOAM_Y_RANGE / 2);
+      let FOAM_Y_HIGH = FOAM_Y_SET_POINT + (FOAM_Y_RANGE / 2);
 
       users[data.id] = data;
       playerOne = process.argv[4];
