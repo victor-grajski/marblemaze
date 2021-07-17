@@ -129,7 +129,7 @@ io.on("connection", (socket) => {
         y1 = map(y1, PLAYER_ONE_Y_LOW, PLAYER_ONE_Y_HIGH, 75, 110);
 
         if (y2 < PLAYER_TWO_Y_LOW) {
-          PLAYER_TWO_Y_LOW = y1;
+          PLAYER_TWO_Y_LOW = y2;
         }
         if (y2 > PLAYER_TWO_Y_HIGH) {
           PLAYER_TWO_Y_HIGH = y2;
