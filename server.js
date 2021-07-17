@@ -50,7 +50,7 @@ const BOOSTER_Y_RANGE = 1.0;
 
 const FOAM_X_SET_POINT = 0.0;
 const FOAM_X_RANGE = 1.0;
-const FOAM_Y_SET_POINT = -2.0;
+const FOAM_Y_SET_POINT = -2.0;                                                      ;
 const FOAM_Y_RANGE = 1.0;
 
 const map = (value, x1, x2, y1, y2) => (value - x1) * (y2 - y1) / (x2 - x1) + y1;
