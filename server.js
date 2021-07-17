@@ -43,15 +43,15 @@ let ready = false;
 let x;
 let y;
 
-const BOOSTER_X_SET_POINT = 0.0;
-const BOOSTER_X_RANGE = 1.0;
-const BOOSTER_Y_SET_POINT = -2.0;
-const BOOSTER_Y_RANGE = 1.0;
+const PLAYER_ONE_X_SET_POINT = 0.0;
+const PLAYER_ONE_X_RANGE = 1.0;
+const PLAYER_ONE_Y_SET_POINT = parseFloat(process.argv[4]);
+const PLAYER_ONE_Y_RANGE = 1.0;
 
-const FOAM_X_SET_POINT = 0.0;
-const FOAM_X_RANGE = 1.0;
-const FOAM_Y_SET_POINT = -2.0;                                                      ;
-const FOAM_Y_RANGE = 1.0;
+const PLAYER_TWO_X_SET_POINT = 0.0;
+const PLAYER_TWO_X_RANGE = 1.0;
+const PLAYER_TWO_Y_SET_POINT = parseFloat(process.argv[5]);                                                      ;
+const PLAYER_TWO_Y_RANGE = 1.0;
 
 const map = (value, x1, x2, y1, y2) => (value - x1) * (y2 - y1) / (x2 - x1) + y1;
 
@@ -84,31 +84,32 @@ io.on("connection", (socket) => {
 
   socket.on("phonemove", data => {
     if (ready) {
-      let BOOSTER_X_LOW = BOOSTER_X_SET_POINT - (BOOSTER_X_RANGE / 2);
-      let BOOSTER_X_HIGH = BOOSTER_X_SET_POINT + (BOOSTER_X_RANGE / 2);
-      let BOOSTER_Y_LOW = BOOSTER_Y_SET_POINT - (BOOSTER_Y_RANGE / 2);
-      let BOOSTER_Y_HIGH = BOOSTER_Y_SET_POINT + (BOOSTER_Y_RANGE / 2);
+      let PLAYER_ONE_X_LOW = PLAYER_ONE_X_SET_POINT - (PLAYER_ONE_X_RANGE / 2);
+      let PLAYER_ONE_X_HIGH = PLAYER_ONE_X_SET_POINT + (PLAYER_ONE_X_RANGE / 2);
+      let PLAYER_ONE_Y_LOW = PLAYER_ONE_Y_SET_POINT - (PLAYER_ONE_Y_RANGE / 2);
+      let PLAYER_ONE_Y_HIGH = PLAYER_ONE_Y_SET_POINT + (PLAYER_ONE_Y_RANGE / 2);
 
-      let FOAM_X_LOW = FOAM_X_SET_POINT - (FOAM_X_RANGE / 2);
-      let FOAM_X_HIGH = FOAM_X_SET_POINT + (FOAM_X_RANGE / 2);
-      let FOAM_Y_LOW = FOAM_Y_SET_POINT - (FOAM_Y_RANGE / 2);
-      let FOAM_Y_HIGH = FOAM_Y_SET_POINT + (FOAM_Y_RANGE / 2);
+      let PLAYER_TWO_X_LOW = PLAYER_TWO_X_SET_POINT - (PLAYER_TWO_X_RANGE / 2);
+      let PLAYER_TWO_X_HIGH = PLAYER_TWO_X_SET_POINT + (PLAYER_TWO_X_RANGE / 2);
+      let PLAYER_TWO_Y_LOW = PLAYER_TWO_Y_SET_POINT - (PLAYER_TWO_Y_RANGE / 2);
+      let PLAYER_TWO_Y_HIGH = PLAYER_TWO_Y_SET_POINT + (PLAYER_TWO_Y_RANGE / 2);
 
       users[data.id] = data;
-      playerOne = process.argv[4];
-      playerTwo = process.argv[5];
 
       if (users.length === 1) {
         x = users[0].x;
         y = users[0].y;
 
-        if (playerOne === "booster") {
-          x = map(x, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
-          y = map(y, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
-        } else {
-          x = map(x, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
-          y = map(y, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+        if (y < PLAYER_ONE_Y_LOW) {
+          PLAYER_ONE_Y_LOW = y;
         }
+        if (y > PLAYER_ONE_Y_HIGH) {
+          PLAYER_ONE_Y_HIGH = y;
+        }
+
+        x = map(x, PLAYER_ONE_X_LOW, PLAYER_ONE_X_HIGH, 80, 110);
+        y = map(y, PLAYER_ONE_Y_LOW, PLAYER_ONE_Y_HIGH, 75, 110);
+
       }
       if (users.length > 1) {
         x1 = users[0].x;
@@ -117,21 +118,25 @@ io.on("connection", (socket) => {
         x2 = users[1].x;
         y2 = users[1].y;
 
-        if (playerOne === "booster") {
-          x1 = map(x1, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
-          y1 = map(y1, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
-        } else {
-          x1 = map(x1, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
-          y1 = map(y1, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+        if (y1 < PLAYER_ONE_Y_LOW) {
+          PLAYER_ONE_Y_LOW = y1;
+        }
+        if (y1 > PLAYER_ONE_Y_HIGH) {
+          PLAYER_ONE_Y_HIGH = y1;
         }
 
-        if (playerTwo === "booster") {
-          x2 = map(x2, BOOSTER_X_LOW, BOOSTER_X_HIGH, 80, 110);
-          y2 = map(y2, BOOSTER_Y_LOW, BOOSTER_Y_HIGH, 75, 110);
-        } else {
-          x2 = map(x2, FOAM_X_LOW, FOAM_X_HIGH, 80, 110);
-          y2 = map(y2, FOAM_Y_LOW, FOAM_Y_HIGH, 75, 110);
+        x1 = map(x1, PLAYER_ONE_X_LOW, PLAYER_ONE_X_HIGH, 80, 110);
+        y1 = map(y1, PLAYER_ONE_Y_LOW, PLAYER_ONE_Y_HIGH, 75, 110);
+
+        if (y2 < PLAYER_TWO_Y_LOW) {
+          PLAYER_TWO_Y_LOW = y1;
         }
+        if (y2 > PLAYER_TWO_Y_HIGH) {
+          PLAYER_TWO_Y_HIGH = y2;
+        }
+
+        x2 = map(x2, PLAYER_TWO_X_LOW, PLAYER_TWO_X_HIGH, 80, 110);
+        y2 = map(y2, PLAYER_TWO_Y_LOW, PLAYER_TWO_Y_HIGH, 75, 110);
 
         x = (x1 + x2) / 2;
         y = (y1 + y2) / 2;
