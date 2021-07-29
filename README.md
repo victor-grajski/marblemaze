@@ -1,3 +1,1 @@
-# marblemaze
-# marblemaze
-# marblemaze
+See wiki for setup instructions
