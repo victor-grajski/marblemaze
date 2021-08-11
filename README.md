@@ -155,3 +155,18 @@ Once all players' phones have joined you'll see a prompt on the command line `Re
 To reset the game with new y-axis calibration points, repeat steps 21-25
 
 You can place the whole enclosure + GoalZero in a car and unplug the monitor once everything is calibrated and running!
+
+# Power-down Instructions
+## 1. Kill the webserver with ctrl+c
+
+## 2. Shutdown the RPi from the GUI command bar
+
+Click the Raspberry logo, click Logout -> Shutdown
+
+## 3. Flip the RPi power switch
+
+## 4. Turn the keyboard/trackpad off
+
+## 5. Turn the GoalZero plugs off
+
+## 6. Turn the servo motor battery pack off
