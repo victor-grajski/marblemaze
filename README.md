@@ -1,17 +1,29 @@
 # Setup Instructions
 ![swervo parts](https://live.staticflickr.com/65535/51343954456_baf096c760_b.jpg)
 A: keyboard/trackpad
+
 B: monitor
+
 C: Raspberry Pi (RPi)
+
 D: monitor power cable
+
 E: RPi power supply
+
 F: RPi HDMI cable
+
 G: Arduino micro-USB-to-USB cable
+
 H: servo motor driver
+
 I: breadboard
+
 J: servo battery pack
+
 K: mobile game board enclosure
+
 L: computing garage + game board
+
 M: GoalZero battery
 
 ## 1. Connect servo motors to extension cables
